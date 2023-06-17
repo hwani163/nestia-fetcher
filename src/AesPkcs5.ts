@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import CryptoJS from "crypto-js";
 
 /**
  * Utility class for the AES-128/256 encryption.
@@ -20,14 +20,25 @@ export namespace AesPkcs5 {
      * @return Encrypted data
      */
     export function encrypt(data: string, key: string, iv: string): string {
-        const bytes: number = key.length * 8;
-        const cipher: crypto.Cipher = crypto.createCipheriv(
-            `AES-${bytes}-CBC`,
-            key,
-            iv,
+        const cipher = CryptoJS.AES.encrypt(
+            data,
+            CryptoJS.enc.Utf8.parse(key),
+            {
+                iv: CryptoJS.enc.Utf8.parse(iv),
+                padding: CryptoJS.pad.Pkcs7,
+                mode: CryptoJS.mode.CBC,
+            },
         );
+        return cipher.toString();
 
-        return cipher.update(data, "utf8", "base64") + cipher.final("base64");
+        // const bytes: number = key.length * 8;
+        // const cipher: crypto.Cipher = crypto.createCipheriv(
+        //     `AES-${bytes}-CBC`,
+        //     key,
+        //     iv,
+        // );
+
+        // return cipher.update(data, "utf8", "base64") + cipher.final("base64");
     }
 
     /**
@@ -39,13 +50,15 @@ export namespace AesPkcs5 {
      * @return Decrypted data.
      */
     export function decrypt(data: string, key: string, iv: string): string {
-        const bytes: number = key.length * 8;
-        const decipher: crypto.Decipher = crypto.createDecipheriv(
-            `AES-${bytes}-CBC`,
-            key,
-            iv,
+        const cipher = CryptoJS.AES.decrypt(
+            data,
+            CryptoJS.enc.Utf8.parse(key),
+            {
+                iv: CryptoJS.enc.Utf8.parse(iv),
+                padding: CryptoJS.pad.Pkcs7,
+                mode: CryptoJS.mode.CBC,
+            },
         );
-
-        return decipher.update(data, "base64", "utf8") + decipher.final("utf8");
+        return cipher.toString(CryptoJS.enc.Utf8);
     }
 }
