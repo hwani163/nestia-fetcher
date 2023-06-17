@@ -1,7 +1,7 @@
 {
   "name": "nestia-fetcher",
   "version": "2.0.4",
-  "description": "Fetcher for the Nestia",
+  "description": "nestia fetcher를 rn에서 사용하기위해 crtypo -> cryptojs로 마이그한 repo입니다",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
