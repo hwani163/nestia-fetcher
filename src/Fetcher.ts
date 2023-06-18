@@ -76,8 +76,8 @@ export class Fetcher {
         // REQUEST MESSSAGE
         //----
         // METHOD & HEADERS
-        console.log(encrypted);
-        console.log(stringify);
+        console.error(encrypted);
+        console.error(stringify);
         let path = _path;
         if (_path[0] !== "/") path = "/" + _path;
 
@@ -96,7 +96,7 @@ export class Fetcher {
                       }
                     : connection.headers,
         };
-        // console.log(init);
+        console.error(init);
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
