@@ -113,6 +113,7 @@ export class Fetcher {
                       }
                     : connection.headers,
         };
+        console.log(init);
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
