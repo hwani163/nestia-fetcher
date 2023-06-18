@@ -97,8 +97,8 @@ export class Fetcher {
                       }
                     : connection.headers,
         };
-        console.error(init);
-        throw new Error(JSON.stringify(init));
+        // console.error(init);
+        // throw new Error(JSON.stringify(init));
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
