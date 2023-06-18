@@ -72,12 +72,23 @@ export class Fetcher {
         input?: object,
         stringify?: (input: any) => string,
     ): Promise<Primitive<Output>> {
-        if (encrypted.request === true || encrypted.response === true)
-            if (connection.encryption === undefined)
-                throw new Error(
-                    "Error on nestia.Fetcher.encrypt(): the encryption password has not been configured.",
-                );
-
+        // if (encrypted.request === true || encrypted.response === true)
+        //     if (connection.encryption === undefined)
+        //         throw new Error(
+        //             "Error on nestia.Fetcher.encrypt(): the encryption password has not been configured.",
+        //         );
+        console.warn(
+            "connection",
+            connection,
+            "encrypted",
+            encrypted,
+            "method",
+            method,
+            "path",
+            path,
+            "input",
+            input,
+        );
         if (typeof stringify === "function") {
             stringify(input);
         }
@@ -94,9 +105,8 @@ export class Fetcher {
             url: path,
             method,
             headers:
-                encrypted.request === false &&
-                input !== undefined &&
-                typeof input === "object"
+                // encrypted.request === false &&
+                input !== undefined && typeof input === "object"
                     ? {
                           ...connection.headers,
                           "Content-Type": "application/json",
