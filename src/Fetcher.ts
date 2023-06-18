@@ -28,9 +28,7 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log(error.response);
         return error.response;
-        return Promise.reject(error);
     },
 );
 
@@ -130,13 +128,13 @@ export class Fetcher {
 
         // DO FETCH
         const response = await axiosInstance(init);
-        console.log(response, "Whatthe Fuck!");
         let body = response.data;
         if (!body) return undefined!;
         // response.headers;
         // CHECK THE STATUS CODE
-        if (response.status !== 200 && response.status !== 201)
+        if (response.status !== 200 && response.status !== 201) {
             throw new HttpError(method, path, response.status, body);
+        }
 
         //----
         // OUTPUT
