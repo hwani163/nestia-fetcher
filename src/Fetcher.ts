@@ -90,14 +90,10 @@ export class Fetcher {
             baseURL: connection.baseURL,
             url: path,
             method,
-            headers:
-                // encrypted.request === false &&
-                input !== undefined && typeof input === "object"
-                    ? {
-                          ...connection.headers,
-                          "Content-Type": "application/json",
-                      }
-                    : connection.headers,
+            headers: {
+                ...connection.headers,
+                "Content-Type": "application/json",
+            },
         };
         console.log(init);
         // throw new Error(JSON.stringify(init));
