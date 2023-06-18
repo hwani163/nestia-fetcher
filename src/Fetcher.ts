@@ -14,7 +14,7 @@ import axios, {
 } from "axios";
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
-    console.log(config);
+    // console.log(config);
     const { headers: configHeader, ...restConfig } = config;
     return {
         withCredentials: true,
@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use((config) => {
 });
 axiosInstance.interceptors.response.use(
     (response) => {
-        console.log(response);
+        // console.log(response);
         return response;
     },
     (error) => Promise.reject(error.response),
@@ -111,7 +111,7 @@ export class Fetcher {
                 "Content-Type": "application/json",
             },
         };
-        console.log(init);
+        // console.log(init);
         // throw new Error(JSON.stringify(init));
 
         // REQUEST BODY (WITH ENCRYPTION)
