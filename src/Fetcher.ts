@@ -97,6 +97,7 @@ export class Fetcher {
                     : connection.headers,
         };
         console.error(init);
+        throw new Error(JSON.stringify(init));
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
@@ -132,6 +133,7 @@ export class Fetcher {
                 typeof ret.__set_headers__ === "object"
             ) {
                 if (connection.headers === undefined) connection.headers = {};
+                // @ts-ignore
                 Object.assign(connection.headers, ret.__set_headers__);
             }
         } catch {}
