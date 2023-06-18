@@ -5,7 +5,7 @@ import { IConnection } from "./IConnection";
 import { Primitive } from "./Primitive";
 
 // import { AesPkcs5 } from "./AesPkcs5";
-import { HttpError } from "./HttpError";
+// import { HttpError } from "./HttpError";
 // import { Singleton } from "./internal/Singleton";
 import axios, {
     // AxiosHeaders,
@@ -132,9 +132,9 @@ export class Fetcher {
         if (!body) return undefined!;
         // response.headers;
         // CHECK THE STATUS CODE
-        if (response.status !== 200 && response.status !== 201) {
-            throw new HttpError(method, path, response.status, body);
-        }
+        // if (response.status !== 200 && response.status !== 201) {
+        //     throw new HttpError(method, path, response.status, body);
+        // }
 
         //----
         // OUTPUT
