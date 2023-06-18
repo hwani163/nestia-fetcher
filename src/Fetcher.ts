@@ -77,8 +77,8 @@ export class Fetcher {
         // REQUEST MESSSAGE
         //----
         // METHOD & HEADERS
-        console.error(encrypted);
-        console.error(stringify);
+        console.log(encrypted);
+        console.log(stringify);
         let path = _path;
         if (_path[0] !== "/") path = "/" + _path;
 
