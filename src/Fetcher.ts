@@ -13,6 +13,15 @@ import axios, {
     // AxiosResponseHeaders,
 } from "axios";
 const axiosInstance = axios.create();
+axiosInstance.interceptors.request.use((config) => {
+    console.log(config);
+    const { headers: configHeader, ...restConfig } = config;
+    return {
+        withCredentials: true,
+        headers: configHeader,
+        ...restConfig,
+    };
+});
 axiosInstance.interceptors.response.use(
     (response) => {
         return response;
