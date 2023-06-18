@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         console.log(error);
-        Promise.reject(error);
+        return Promise.reject(error);
     },
 );
 
@@ -129,7 +129,7 @@ export class Fetcher {
 
         // DO FETCH
         const response = await axiosInstance(init);
-        console.log(response.status);
+        console.log(response.status, "Whatthe Fuck!");
         let body = response.data;
         if (!body) return undefined!;
         // response.headers;
