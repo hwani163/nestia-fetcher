@@ -68,35 +68,18 @@ export class Fetcher {
         connection: IConnection,
         encrypted: Fetcher.IEncrypted,
         method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH",
-        path: string,
+        _path: string,
         input?: object,
         stringify?: (input: any) => string,
     ): Promise<Primitive<Output>> {
-        // if (encrypted.request === true || encrypted.response === true)
-        //     if (connection.encryption === undefined)
-        //         throw new Error(
-        //             "Error on nestia.Fetcher.encrypt(): the encryption password has not been configured.",
-        //         );
-        console.warn(
-            "connection",
-            connection,
-            "encrypted",
-            encrypted,
-            "method",
-            method,
-            "path",
-            path,
-            "input",
-            input,
-        );
-        if (typeof stringify === "function") {
-            stringify(input);
-        }
         //----
         // REQUEST MESSSAGE
         //----
         // METHOD & HEADERS
-        if (path[0] !== "/") path = "/" + path;
+        console.log(encrypted);
+        console.log(stringify);
+        let path = _path;
+        if (_path[0] !== "/") path = "/" + _path;
 
         // const url: URL = new URL(`${connection.host}${path}`);
 
@@ -113,27 +96,11 @@ export class Fetcher {
                       }
                     : connection.headers,
         };
-        console.log(init);
+        // console.log(init);
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
-            let body = input;
-            // if (encrypted.request === true) {
-            //     const headers: Singleton<Record<string, string>> =
-            //         new Singleton(() => init.headers as Record<string, string>);
-            //     const password:
-            //         | IEncryptionPassword
-            //         | IEncryptionPassword.Closure =
-            //         connection.encryption instanceof Function
-            //             ? connection.encryption!(
-            //                   { headers: headers.get(), body },
-            //                   true,
-            //               )
-            //             : connection.encryption!;
-            //     if (is_disabled(password, headers, body, true) === false)
-            //         body = AesPkcs5.encrypt(body, password.key, password.iv);
-            // }
-            init.data = body;
+            init.data = input;
         }
 
         //----
@@ -145,24 +112,10 @@ export class Fetcher {
         const response = await axios(init);
         let body = response.data;
         if (!body) return undefined!;
-        response.headers;
+        // response.headers;
         // CHECK THE STATUS CODE
         if (response.status !== 200 && response.status !== 201)
             throw new HttpError(method, path, response.status, body);
-
-        // FINALIZATION (WITH DECODING)
-        // if (encrypted.response === true) {
-        //     const headers = new Singleton(() => response.headers);
-        //     const password: IEncryptionPassword | IEncryptionPassword.Closure =
-        //         connection.encryption instanceof Function
-        //             ? connection.encryption!(
-        //                   { headers: headers.get(), body },
-        //                   false,
-        //               )
-        //             : connection.encryption!;
-        //     if (is_disabled(password, headers, body, false) === false)
-        //         body = AesPkcs5.decrypt(body, password.key, password.iv);
-        // }
 
         //----
         // OUTPUT
