@@ -8,26 +8,23 @@ import { Primitive } from "./Primitive";
 // import { HttpError } from "./HttpError";
 // import { Singleton } from "./internal/Singleton";
 import axios, {
-    // AxiosHeaders,
-    AxiosRequestConfig,
-    // AxiosResponseHeaders,
+  // AxiosHeaders,
+  AxiosRequestConfig,
+  // AxiosResponseHeaders,
 } from "axios";
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
-    // console.log(config);
-    const { headers: configHeader, ...restConfig } = config;
-    return {
-        withCredentials: true,
-        headers: configHeader,
-        ...restConfig,
-    };
+  const { headers: configHeader, ...restConfig } = config;
+  return {
+    headers: configHeader,
+    ...restConfig,
+  };
 });
 axiosInstance.interceptors.response.use(
-    (response) => {
-        // console.log(response);
-        return response;
-    },
-    (error) => Promise.reject(error.response),
+  (response) => {
+    return response;
+  },
+  (error) => Promise.reject(error?.response)
 );
 
 /**
@@ -45,148 +42,148 @@ axiosInstance.interceptors.response.use(
  * @author Jeongho Nam - https://github.com/samchon
  */
 export class Fetcher {
-    /**
-     * Fetch function for the `GET` or `DELETE` methods.
-     *
-     * @param connection Connection information for the remote HTTP server
-     * @param encrypted Whether the request/response body be encrypted or not
-     * @param method Method of the HTTP request
-     * @param path Path of the HTTP request
-     * @return Response body data from the remote HTTP server
-     */
-    public static fetch<Output>(
-        connection: IConnection,
-        encrypted: Fetcher.IEncrypted,
-        method: "GET" | "DELETE",
-        path: string,
-    ): Promise<Primitive<Output>>;
+  /**
+   * Fetch function for the `GET` or `DELETE` methods.
+   *
+   * @param connection Connection information for the remote HTTP server
+   * @param encrypted Whether the request/response body be encrypted or not
+   * @param method Method of the HTTP request
+   * @param path Path of the HTTP request
+   * @return Response body data from the remote HTTP server
+   */
+  public static fetch<Output>(
+    connection: IConnection,
+    encrypted: Fetcher.IEncrypted,
+    method: "GET" | "DELETE",
+    path: string
+  ): Promise<Primitive<Output>>;
 
-    /**
-     * Fetch function for the `POST`, `PUT` and `PATCH` methods.
-     *
-     * @param connection Connection information for the remote HTTP server
-     * @param encrypted Whether the request/response body be encrypted or not
-     * @param method Method of the HTTP request
-     * @param path Path of the HTTP request
-     * @param input Request body data for the HTTP request
-     * @param stringify JSON string conversion function, default is the `JSON.stringify`
-     * @return Response body data from the remote HTTP server
-     */
-    public static fetch<Input, Output>(
-        connection: IConnection,
-        encrypted: Fetcher.IEncrypted,
-        method: "POST" | "PUT" | "PATCH",
-        path: string,
-        input: Input,
-        stringify?: (input: Input) => string,
-    ): Promise<Primitive<Output>>;
+  /**
+   * Fetch function for the `POST`, `PUT` and `PATCH` methods.
+   *
+   * @param connection Connection information for the remote HTTP server
+   * @param encrypted Whether the request/response body be encrypted or not
+   * @param method Method of the HTTP request
+   * @param path Path of the HTTP request
+   * @param input Request body data for the HTTP request
+   * @param stringify JSON string conversion function, default is the `JSON.stringify`
+   * @return Response body data from the remote HTTP server
+   */
+  public static fetch<Input, Output>(
+    connection: IConnection,
+    encrypted: Fetcher.IEncrypted,
+    method: "POST" | "PUT" | "PATCH",
+    path: string,
+    input: Input,
+    stringify?: (input: Input) => string
+  ): Promise<Primitive<Output>>;
 
-    public static async fetch<Output>(
-        connection: IConnection,
-        // @ts-ignore
-        encrypted: Fetcher.IEncrypted,
-        method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH",
-        _path: string,
-        input?: object,
-        // @ts-ignore
-        stringify?: (input: any) => string,
-    ): Promise<Primitive<Output>> {
-        //----
-        // REQUEST MESSSAGE
-        //----
-        // METHOD & HEADERS
-        // console.log(encrypted);
-        // console.log(stringify);
-        let path = _path;
-        if (_path[0] !== "/") path = "/" + _path;
+  public static async fetch<Output>(
+    connection: IConnection,
+    // @ts-ignore
+    encrypted: Fetcher.IEncrypted,
+    method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH",
+    _path: string,
+    input?: object,
+    // @ts-ignore
+    stringify?: (input: any) => string
+  ): Promise<Primitive<Output>> {
+    //----
+    // REQUEST MESSSAGE
+    //----
+    // METHOD & HEADERS
+    // console.log(encrypted);
+    // console.log(stringify);
+    let path = _path;
+    if (_path[0] !== "/") path = "/" + _path;
 
-        // const url: URL = new URL(`${connection.host}${path}`);
+    // const url: URL = new URL(`${connection.host}${path}`);
 
-        const init: AxiosRequestConfig = {
-            baseURL: connection.baseURL,
-            url: path,
-            method,
-            headers: {
-                ...connection.headers,
-                "Content-Type": "application/json",
-            },
-        };
-        // console.log(init);
-        // throw new Error(JSON.stringify(init));
+    const init: AxiosRequestConfig = {
+      baseURL: connection.baseURL,
+      url: path,
+      method,
+      headers: {
+        ...connection.headers,
+        "Content-Type": "application/json",
+      },
+    };
+    // console.log(init);
+    // throw new Error(JSON.stringify(init));
 
-        // REQUEST BODY (WITH ENCRYPTION)
-        if (input !== undefined) {
-            init.data = input;
-        }
-
-        //----
-        // RESPONSE MESSAGE
-        //----
-        // URL SPECIFICATION
-
-        // DO FETCH
-        const response = await axiosInstance(init);
-        let body = response.data;
-        if (!body) return undefined!;
-        // response.headers;
-        // CHECK THE STATUS CODE
-        // if (response.status !== 200 && response.status !== 201) {
-        //     throw new HttpError(method, path, response.status, body);
-        // }
-
-        //----
-        // OUTPUT
-        //----
-        let ret: { __set_headers__: Record<string, any> } & Primitive<Output> =
-            body as any;
-        try {
-            // PARSE RESPONSE BODY
-            ret = ret as any;
-
-            // FIND __SET_HEADERS__ FIELD
-            if (
-                ret.__set_headers__ !== undefined &&
-                typeof ret.__set_headers__ === "object"
-            ) {
-                if (connection.headers === undefined) connection.headers = {};
-                // @ts-ignore
-                Object.assign(connection.headers, ret.__set_headers__);
-            }
-        } catch {}
-
-        // RETURNS
-        return ret;
+    // REQUEST BODY (WITH ENCRYPTION)
+    if (input !== undefined) {
+      init.data = input;
     }
+
+    //----
+    // RESPONSE MESSAGE
+    //----
+    // URL SPECIFICATION
+
+    // DO FETCH
+    const response = await axiosInstance(init);
+    let body = response.data;
+    if (!body) return undefined!;
+    // response.headers;
+    // CHECK THE STATUS CODE
+    // if (response.status !== 200 && response.status !== 201) {
+    //     throw new HttpError(method, path, response.status, body);
+    // }
+
+    //----
+    // OUTPUT
+    //----
+    let ret: { __set_headers__: Record<string, any> } & Primitive<Output> =
+      body as any;
+    try {
+      // PARSE RESPONSE BODY
+      ret = ret as any;
+
+      // FIND __SET_HEADERS__ FIELD
+      if (
+        ret.__set_headers__ !== undefined &&
+        typeof ret.__set_headers__ === "object"
+      ) {
+        if (connection.headers === undefined) connection.headers = {};
+        // @ts-ignore
+        Object.assign(connection.headers, ret.__set_headers__);
+      }
+    } catch {}
+
+    // RETURNS
+    return ret;
+  }
 }
 
 export namespace Fetcher {
+  /**
+   * Whether be encrypted or not.
+   *
+   * `Fetcher.IEncrypted` is a type of interface who represents whether the HTTP request
+   * and response body must be encrypted or not.
+   *
+   * Like the {@link Fetcher} who are being used by all of the SDK libraries that are
+   * generated by the [Nestia](https://github.com/samchon/nestia), this `IEncrypted`
+   * interface would be used by the [Nestia](https://github.com/samchon/nestia) generated
+   * SDK libaries.
+   *
+   * As this `Fetcher` be used only by the [**Nestia**](https://github.com/samchon/nestia)
+   * generated SDK libraries, you don't need to handle this class directly. It may only be
+   * appeared in the source codes of the [**Nestia**](https://github.com/samchon/nestia)
+   * generated SDK libraries.
+   */
+  export interface IEncrypted {
     /**
-     * Whether be encrypted or not.
-     *
-     * `Fetcher.IEncrypted` is a type of interface who represents whether the HTTP request
-     * and response body must be encrypted or not.
-     *
-     * Like the {@link Fetcher} who are being used by all of the SDK libraries that are
-     * generated by the [Nestia](https://github.com/samchon/nestia), this `IEncrypted`
-     * interface would be used by the [Nestia](https://github.com/samchon/nestia) generated
-     * SDK libaries.
-     *
-     * As this `Fetcher` be used only by the [**Nestia**](https://github.com/samchon/nestia)
-     * generated SDK libraries, you don't need to handle this class directly. It may only be
-     * appeared in the source codes of the [**Nestia**](https://github.com/samchon/nestia)
-     * generated SDK libraries.
+     * Whether the request body be encrypted or not.
      */
-    export interface IEncrypted {
-        /**
-         * Whether the request body be encrypted or not.
-         */
-        request?: boolean;
+    request?: boolean;
 
-        /**
-         * Whether the response body be encrypted or not.
-         */
-        response: boolean;
-    }
+    /**
+     * Whether the response body be encrypted or not.
+     */
+    response: boolean;
+  }
 }
 
 // const polyfill = new Singleton(async (): Promise<typeof fetch> => {
