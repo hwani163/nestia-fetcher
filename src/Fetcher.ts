@@ -67,18 +67,20 @@ export class Fetcher {
 
     public static async fetch<Output>(
         connection: IConnection,
+        // @ts-ignore
         encrypted: Fetcher.IEncrypted,
         method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH",
         _path: string,
         input?: object,
+        // @ts-ignore
         stringify?: (input: any) => string,
     ): Promise<Primitive<Output>> {
         //----
         // REQUEST MESSSAGE
         //----
         // METHOD & HEADERS
-        console.log(encrypted);
-        console.log(stringify);
+        // console.log(encrypted);
+        // console.log(stringify);
         let path = _path;
         if (_path[0] !== "/") path = "/" + _path;
 
@@ -97,7 +99,7 @@ export class Fetcher {
                       }
                     : connection.headers,
         };
-        // console.error(init);
+        console.log(init);
         // throw new Error(JSON.stringify(init));
 
         // REQUEST BODY (WITH ENCRYPTION)
