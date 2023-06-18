@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from "axios";
+import { IEncryptionPassword } from "./IEncryptionPassword";
 /**
  * Connection information.
  *
@@ -13,9 +13,17 @@ import { AxiosRequestConfig } from "axios";
  *
  * @author Jenogho Nam - https://github.com/samchon
  */
-export interface IConnection extends Omit<AxiosRequestConfig, "method"> {
+export interface IConnection {
     /**
      * Host address of the remote HTTP server.
      */
     host: string;
+    /**
+     * Header values delivered to the remote HTTP server.
+     */
+    headers?: Record<string, string>;
+    /**
+     * Encryption password of its closure function.
+     */
+    encryption?: IEncryptionPassword | IEncryptionPassword.Closure;
 }

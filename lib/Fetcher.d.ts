@@ -24,7 +24,7 @@ export declare class Fetcher {
      * @param path Path of the HTTP request
      * @return Response body data from the remote HTTP server
      */
-    static fetch<Output>(connection: IConnection, method: "GET" | "DELETE", path: string): Promise<Primitive<Output>>;
+    static fetch<Output>(connection: IConnection, encrypted: Fetcher.IEncrypted, method: "GET" | "DELETE", path: string): Promise<Primitive<Output>>;
     /**
      * Fetch function for the `POST`, `PUT` and `PATCH` methods.
      *
@@ -36,7 +36,7 @@ export declare class Fetcher {
      * @param stringify JSON string conversion function, default is the `JSON.stringify`
      * @return Response body data from the remote HTTP server
      */
-    static fetch<Input, Output>(connection: IConnection, method: "POST" | "PUT" | "PATCH", path: string, input: Input): Promise<Primitive<Output>>;
+    static fetch<Input, Output>(connection: IConnection, encrypted: Fetcher.IEncrypted, method: "POST" | "PUT" | "PATCH", path: string, input: Input, stringify?: (input: Input) => string): Promise<Primitive<Output>>;
 }
 export declare namespace Fetcher {
     /**

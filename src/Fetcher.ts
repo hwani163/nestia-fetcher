@@ -1,10 +1,13 @@
+import import2 from "import2";
+
 import { IConnection } from "./IConnection";
+import { IEncryptionPassword } from "./IEncryptionPassword";
 import { Primitive } from "./Primitive";
 
+import { AesPkcs5 } from "./AesPkcs5";
 import { HttpError } from "./HttpError";
-import { Axios } from "./Axios";
-import { AxiosRequestConfig } from "axios";
-const axios = Axios.getInstance().instance;
+import { Singleton } from "./internal/Singleton";
+
 /**
  * Fetcher, utility class for the [**Nestia**](https://github.com/samchon/nestia) fetch.
  *
@@ -31,6 +34,7 @@ export class Fetcher {
      */
     public static fetch<Output>(
         connection: IConnection,
+        encrypted: Fetcher.IEncrypted,
         method: "GET" | "DELETE",
         path: string,
     ): Promise<Primitive<Output>>;
@@ -48,65 +52,111 @@ export class Fetcher {
      */
     public static fetch<Input, Output>(
         connection: IConnection,
+        encrypted: Fetcher.IEncrypted,
         method: "POST" | "PUT" | "PATCH",
         path: string,
         input: Input,
+        stringify?: (input: Input) => string,
     ): Promise<Primitive<Output>>;
 
     public static async fetch<Output>(
         connection: IConnection,
+        encrypted: Fetcher.IEncrypted,
         method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH",
         path: string,
         input?: object,
+        stringify?: (input: object) => string,
     ): Promise<Primitive<Output>> {
+        if (encrypted.request === true || encrypted.response === true)
+            if (connection.encryption === undefined)
+                throw new Error(
+                    "Error on nestia.Fetcher.encrypt(): the encryption password has not been configured.",
+                );
+
         //----
         // REQUEST MESSSAGE
         //----
         // METHOD & HEADERS
-        if (path[0] !== "/") {
-            path = "/" + path;
-        }
-
-        const init: AxiosRequestConfig = {
-            baseURL: connection.host,
-            url: path,
+        const init: RequestInit = {
             method,
             headers:
-                input !== undefined && typeof input === "object"
+                encrypted.request === false &&
+                input !== undefined &&
+                typeof input === "object"
                     ? {
                           ...connection.headers,
                           "Content-Type": "application/json",
                       }
                     : connection.headers,
-        } as AxiosRequestConfig;
+        };
 
         // REQUEST BODY (WITH ENCRYPTION)
         if (input !== undefined) {
-            init.data = input;
+            let body: string = (stringify || JSON.stringify)(input);
+            if (encrypted.request === true) {
+                const headers: Singleton<Record<string, string>> =
+                    new Singleton(() => init.headers as Record<string, string>);
+                const password:
+                    | IEncryptionPassword
+                    | IEncryptionPassword.Closure =
+                    connection.encryption instanceof Function
+                        ? connection.encryption!(
+                              { headers: headers.get(), body },
+                              true,
+                          )
+                        : connection.encryption!;
+                if (is_disabled(password, headers, body, true) === false)
+                    body = AesPkcs5.encrypt(body, password.key, password.iv);
+            }
+            init.body = body;
         }
 
         //----
         // RESPONSE MESSAGE
         //----
         // URL SPECIFICATION
+        if (
+            connection.host[connection.host.length - 1] !== "/" &&
+            path[0] !== "/"
+        )
+            path = "/" + path;
+
+        const url: URL = new URL(`${connection.host}${path}`);
 
         // DO FETCH
-        const response = await axios(init);
-
-        let data = response.data;
-        if (!data) return undefined!;
+        const response: Response = await (await polyfill.get())(url.href, init);
+        let body: string = await response.text();
+        if (!body) return undefined!;
 
         // CHECK THE STATUS CODE
-        if (response.status !== 200 && response.status !== 201) {
-            throw new HttpError(method, path, response.status, data);
+        if (response.status !== 200 && response.status !== 201)
+            throw new HttpError(method, path, response.status, body);
+
+        // FINALIZATION (WITH DECODING)
+        if (encrypted.response === true) {
+            const headers: Singleton<Record<string, string>> = new Singleton(
+                () => headers_to_object(response.headers),
+            );
+            const password: IEncryptionPassword | IEncryptionPassword.Closure =
+                connection.encryption instanceof Function
+                    ? connection.encryption!(
+                          { headers: headers.get(), body },
+                          false,
+                      )
+                    : connection.encryption!;
+            if (is_disabled(password, headers, body, false) === false)
+                body = AesPkcs5.decrypt(body, password.key, password.iv);
         }
 
         //----
         // OUTPUT
         //----
         let ret: { __set_headers__: Record<string, any> } & Primitive<Output> =
-            data as any;
+            body as any;
         try {
+            // PARSE RESPONSE BODY
+            ret = JSON.parse(ret as any);
+
             // FIND __SET_HEADERS__ FIELD
             if (
                 ret.__set_headers__ !== undefined &&
@@ -118,7 +168,7 @@ export class Fetcher {
         } catch {}
 
         // RETURNS
-        return data;
+        return ret;
     }
 }
 
@@ -150,4 +200,42 @@ export namespace Fetcher {
          */
         response: boolean;
     }
+}
+
+const polyfill = new Singleton(async (): Promise<typeof fetch> => {
+    if (
+        typeof global === "object" &&
+        typeof global.process === "object" &&
+        typeof global.process.versions === "object" &&
+        typeof global.process.versions.node !== undefined
+    ) {
+        if (global.fetch === undefined)
+            global.fetch = ((await import2("node-fetch")) as any).default;
+        return (global as any).fetch;
+    }
+    return window.fetch;
+});
+
+function is_disabled(
+    password: IEncryptionPassword,
+    headers: Singleton<Record<string, string>>,
+    body: string,
+    encoded: boolean,
+): boolean {
+    if (password.disabled === undefined) return false;
+    if (typeof password.disabled === "function")
+        return password.disabled(
+            {
+                headers: headers.get(),
+                body,
+            },
+            encoded,
+        );
+    return password.disabled;
+}
+
+function headers_to_object(headers: Headers): Record<string, string> {
+    const output: Record<string, string> = {};
+    headers.forEach((value, key) => (output[key] = value));
+    return output;
 }
