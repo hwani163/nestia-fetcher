@@ -13,6 +13,12 @@ import axios, {
     // AxiosResponseHeaders,
 } from "axios";
 const axiosInstance = axios.create();
+axiosInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => Promise.reject(error),
+);
 
 /**
  * Fetcher, utility class for the [**Nestia**](https://github.com/samchon/nestia) fetch.
