@@ -12,6 +12,7 @@ import axios, {
     AxiosRequestConfig,
     // AxiosResponseHeaders,
 } from "axios";
+const axiosInstance = axios.create();
 
 /**
  * Fetcher, utility class for the [**Nestia**](https://github.com/samchon/nestia) fetch.
@@ -110,7 +111,7 @@ export class Fetcher {
         // URL SPECIFICATION
 
         // DO FETCH
-        const response = await axios(init);
+        const response = await axiosInstance(init);
         let body = response.data;
         if (!body) return undefined!;
         // response.headers;
