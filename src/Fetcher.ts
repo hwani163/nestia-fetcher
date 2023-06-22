@@ -24,6 +24,7 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
+  // @ts-ignore
   (error) => {
     if (error.config.method.toUpperCase() === "GET") {
       Promise.reject(
@@ -35,9 +36,11 @@ axiosInstance.interceptors.response.use(
       );
     } else {
       return {
-        ...error?.response?.data,
-        status: error.response.status,
-        config: error?.config,
+        data: {
+          ...error?.response?.data,
+          status: error.response.status,
+          config: error?.config,
+        },
       };
     }
   }
