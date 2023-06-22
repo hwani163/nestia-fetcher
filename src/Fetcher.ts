@@ -28,6 +28,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.config.method.toUpperCase() === "GET") {
       return Promise.reject({
+        error: true,
         ...error?.response?.data,
         status: error.response.status,
         config: error?.config,
