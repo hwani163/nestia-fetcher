@@ -27,21 +27,17 @@ axiosInstance.interceptors.response.use(
   // @ts-ignore
   (error) => {
     if (error.config.method.toUpperCase() === "GET") {
-      Promise.reject(
-        JSON.stringify({
-          ...error?.response?.data,
-          status: error.response.status,
-          config: error?.config,
-        })
-      );
+      Promise.reject({
+        ...error?.response?.data,
+        status: error.response.status,
+        config: error?.config,
+      });
     } else {
-      return {
-        data: {
-          ...error?.response?.data,
-          status: error.response.status,
-          config: error?.config,
-        },
-      };
+      Promise.resolve({
+        ...error?.response?.data,
+        status: error.response.status,
+        config: error?.config,
+      });
     }
   }
 );
