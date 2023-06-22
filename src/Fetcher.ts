@@ -25,7 +25,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log(error);
+    console.log(error.config.method);
     Promise.reject(
       JSON.stringify({
         ...error?.response?.data,
