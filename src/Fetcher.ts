@@ -35,6 +35,7 @@ axiosInstance.interceptors.response.use(
     } else {
       return Promise.resolve({
         data: {
+          error: true,
           ...error?.response?.data,
           status: error.response.status,
           config: error?.config,
