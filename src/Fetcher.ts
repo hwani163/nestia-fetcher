@@ -34,9 +34,11 @@ axiosInstance.interceptors.response.use(
       });
     } else {
       return Promise.resolve({
-        ...error?.response?.data,
-        status: error.response.status,
-        config: error?.config,
+        data: {
+          ...error?.response?.data,
+          status: error.response.status,
+          config: error?.config,
+        },
       });
     }
   }
