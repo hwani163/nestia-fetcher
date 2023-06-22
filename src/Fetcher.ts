@@ -138,7 +138,7 @@ export class Fetcher {
 
     // DO FETCH
     const response = await axiosInstance(init);
-    let body = response.data;
+    let body = response?.data;
     if (!body) return undefined!;
     // response.headers;
     // CHECK THE STATUS CODE
