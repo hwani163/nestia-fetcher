@@ -24,13 +24,15 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) =>
+  (error) => {
+    console.log(error);
     Promise.reject(
       JSON.stringify({
         ...error?.response?.data,
         status: error.response.status,
       })
-    )
+    );
+  }
 );
 
 /**
