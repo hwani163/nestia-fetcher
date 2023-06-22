@@ -138,6 +138,7 @@ export class Fetcher {
 
     // DO FETCH
     const response = await axiosInstance(init);
+    console.log(response);
     let body = response?.data;
     if (!body) return undefined!;
     // response.headers;
