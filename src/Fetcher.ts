@@ -26,11 +26,19 @@ axiosInstance.interceptors.response.use(
   },
   // @ts-ignore
   (error) => {
-    Promise.reject({
-      ...error?.response?.data,
-      status: error.response.status,
-      config: error?.config,
-    });
+    if (error.config.method.toUpperCase() === "GET") {
+      return Promise.reject({
+        ...error?.response?.data,
+        status: error.response.status,
+        config: error?.config,
+      });
+    } else {
+      return Promise.resolve({
+        ...error?.response?.data,
+        status: error.response.status,
+        config: error?.config,
+      });
+    }
   }
 );
 
@@ -130,8 +138,7 @@ export class Fetcher {
 
     // DO FETCH
     const response = await axiosInstance(init);
-    console.log(response);
-    let body = response?.data;
+    let body = response.data;
     if (!body) return undefined!;
     // response.headers;
     // CHECK THE STATUS CODE
