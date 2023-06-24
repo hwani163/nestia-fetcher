@@ -26,11 +26,7 @@ axiosInstance.interceptors.response.use(
   },
   // @ts-ignore
   (error) => {
-    return Promise.reject({
-      ...error?.response?.data,
-      // status: error?.response?.status,
-      config: error?.config,
-    });
+    return Promise.reject(error);
   }
 );
 
