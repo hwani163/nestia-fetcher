@@ -39,6 +39,7 @@ export declare class Fetcher {
     static fetch<Input, Output>(connection: IConnection, encrypted: Fetcher.IEncrypted, method: "POST" | "PUT" | "PATCH", path: string, input: Input, stringify?: (input: Input) => string): Promise<Primitive<Output>>;
     static setToken(token: string): import("axios").AxiosInstance;
     static removeToken(): import("axios").AxiosInstance;
+    static setBaseUrl(baseUrl: string): import("axios").AxiosInstance;
 }
 export declare namespace Fetcher {
     /**

@@ -173,6 +173,10 @@ export class Fetcher {
     delete axiosInstance.defaults.headers.common["Platform-key"];
     return axiosInstance;
   }
+  public static setBaseUrl(baseUrl: string) {
+    axiosInstance.defaults.baseURL = baseUrl;
+    return axiosInstance;
+  }
 }
 
 export namespace Fetcher {
