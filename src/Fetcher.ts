@@ -111,11 +111,9 @@ export class Fetcher {
     // const url: URL = new URL(`${connection.host}${path}`);
 
     const init: AxiosRequestConfig = {
-      baseURL: connection.baseURL,
       url: path,
       method,
       headers: {
-        ...connection.headers,
         "Content-Type": "application/json",
       },
     };
