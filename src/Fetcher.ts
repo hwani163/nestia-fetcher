@@ -175,6 +175,9 @@ export class Fetcher {
     axiosInstance.defaults.baseURL = baseUrl;
     return axiosInstance;
   }
+  public static getAxiosInstance() {
+    return axiosInstance;
+  }
 }
 
 export namespace Fetcher {

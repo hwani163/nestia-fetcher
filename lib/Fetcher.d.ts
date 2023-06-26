@@ -40,6 +40,7 @@ export declare class Fetcher {
     static setToken(token: string): import("axios").AxiosInstance;
     static removeToken(): import("axios").AxiosInstance;
     static setBaseUrl(baseUrl: string): import("axios").AxiosInstance;
+    static getAxiosInstance(): import("axios").AxiosInstance;
 }
 export declare namespace Fetcher {
     /**
