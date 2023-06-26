@@ -37,6 +37,8 @@ export declare class Fetcher {
      * @return Response body data from the remote HTTP server
      */
     static fetch<Input, Output>(connection: IConnection, encrypted: Fetcher.IEncrypted, method: "POST" | "PUT" | "PATCH", path: string, input: Input, stringify?: (input: Input) => string): Promise<Primitive<Output>>;
+    static setToken(token: string): import("axios").AxiosInstance;
+    static removeToken(): import("axios").AxiosInstance;
 }
 export declare namespace Fetcher {
     /**
