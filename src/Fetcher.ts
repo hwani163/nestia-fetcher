@@ -13,6 +13,7 @@ import axios, {
   // AxiosResponseHeaders,
 } from "axios";
 const axiosInstance = axios.create();
+
 axiosInstance.interceptors.request.use((config) => {
   const { headers: configHeader, ...restConfig } = config;
   return {
@@ -163,6 +164,14 @@ export class Fetcher {
 
     // RETURNS
     return ret;
+  }
+  public static setToken(token: string) {
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    return axiosInstance;
+  }
+  public static removeToken() {
+    delete axiosInstance.defaults.headers.common["Platform-key"];
+    return axiosInstance;
   }
 }
 
