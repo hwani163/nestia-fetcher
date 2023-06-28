@@ -164,11 +164,16 @@ export class Fetcher {
     return ret;
   }
   public static setToken(token: string) {
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${token}`;
+    }
+    console.warn("token has undefined! from nestia-fetcher");
     return axiosInstance;
   }
   public static removeToken() {
-    delete axiosInstance.defaults.headers.common["Platform-key"];
+    delete axiosInstance.defaults.headers.common["Authorization"];
     return axiosInstance;
   }
   public static setBaseUrl(baseUrl: string) {
