@@ -12,7 +12,7 @@ import axios, {
   AxiosRequestConfig,
   // AxiosResponseHeaders,
 } from "axios";
-const axiosInstance = axios.create();
+// const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use((config) => {
   const { headers: configHeader, ...restConfig } = config;
@@ -30,6 +30,7 @@ axiosInstance.interceptors.response.use(
     if (error?.response) {
       return Promise.reject({
         ...error?.response?.data,
+        response: error.response,
         status: error?.response?.status,
         config: error?.config,
       });
